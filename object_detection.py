@@ -3,11 +3,16 @@ import cv2
 import numpy as np
 from threading import Thread, Event, local
 import time
+from mongo_atlas import MongoConnection 
 
 
 
-def manageDetection(label, x, y, w, h):
+def manageDetection(label, x, y, w, h, img, count):
     print(label + ": (" + str(x) + ', '+ str(y) + ', '+ str(w) + ', '+ str(h) + ')')
+    crop = img[x: x+w, y: y+h]
+    imdir = 'captures/'+str(count)+'.jpg'
+    cv2.imwrite(imdir, crop)
+    MongoConnection(imdir)
     time.sleep(5)
     running.clear()
 
@@ -23,6 +28,8 @@ def run_camera():
         classes = f.read().splitlines()
 
     cap = cv2.VideoCapture(0)
+
+    count = 0
 
     while(True):
         _, img = cap.read()
@@ -63,17 +70,19 @@ def run_camera():
                 x, y, w, h = boxes[i]
                 label = str(classes[class_ids[i]])
                 confidence = str(round(confidences[i]))
+                copy = img.copy()
+                if(label == "person" and not running.is_set()):
+                    running.set()
+                    thread1 = Thread(target=manageDetection, args=(label, x, y, w, h, copy, count))
+                    thread1.start()
+                    count += 1
+                elif (not running.is_set()):
+                    running.clear()
                 color = (26, 233, 1)
                 cv2.rectangle(img, (x, y), (x+w, y+h), color, 2)
                 cv2.rectangle(img, (x, y), (x+w, y-20), color, -1)
                 cv2.putText(img, label + " " + confidence, (x + 5 , y - 5), font, 0.5, (255, 255, 255), 1)
                 
-                if(label == "person" and not running.is_set()):
-                    running.set()
-                    thread1 = Thread(target=manageDetection, args=(label, x, y, w, h))
-                    thread1.start()
-                elif (not running.is_set()):
-                    running.clear()
 
 
         cv2.imshow('Image', img)
