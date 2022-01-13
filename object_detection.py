@@ -20,14 +20,14 @@ def manageDetection(label, x, y, w, h, img, count):
 
 def run_camera():
     # Load the network
-    net = cv2.dnn.readNet('yolov3-608.weights', 'yolov3-608.cfg')
+    net = cv2.dnn.readNet('config/yolo/yolov3-tiny.weights', 'config/yolo/yolov3-tiny.cfg')
     classes = []
 
     # Load labels
-    with open('coco.names', 'r') as f:
+    with open('config/yolo/coco.names', 'r') as f:
         classes = f.read().splitlines()
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture('birds.mp4')
 
     count = 0
 
