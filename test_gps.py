@@ -1,85 +1,26 @@
-import time
 import serial
+import time
 
-from serial import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
-
-ser = serial.Serial(
-    '/dev/ttyUSB0',
-    115200
-)
-
-commands = [
-    'AT+CGNSPWR=1',
-    'AT+CGNSSEQ="GGA"',
-    'AT+CGNSINF'
-]
-
-dataFormat = [
-    'GPS run status',
-    'Fix status',
-    'UTC date & Time',
-    'Latitude',
-    'Longitude',
-    'MSL Altitude',
-    'Speed Over Ground',
-    'Course Over Ground',
-    'Fix Mode',
-    'Reserved1',
-    'HDOP',
-    'PDOP',
-    'VDOP',
-    'Reserved2',
-    'GPS Satellites in View',
-    'GNSS Satellites Used',
-    'GLONASS Satellites in View',
-    'Reserved3',
-    'C/N0 max',
-    'HPA',
-    'VPA',
-]
-
-okResponse = 'OK'
-errorResponse = 'ERROR'
-
-commandIndex = 0
-timeSleep = 1
-lastResponse = ''
-data = []
-
+ser = serial.Serial("/dev/ttyUSB*", 115200)
+W_buff = ["AT+CGNSPWR=1\r\n", "AT+CGNSSEQ=\"RMC\"\r\n", "AT+CGNSINF\r\n", "AT+CGNSURC=2\r\n", "AT+CGNSTST=1\r\n"]
+ser.write(W_buff[0])
+ser.flushInput()
+data=""
+num=0
 try:
     while True:
-        command = commands[commandIndex]
-        preparedCommand = command + '\r\n'
-
-        ser.write(preparedCommand.encode())
-
-        while lastResponse != okResponse and lastResponse != errorResponse:
-            lastResponse = ser.read_until().decode()
-            lastResponse = lastResponse.replace('\r', '')
-            lastResponse = lastResponse.replace('\n', '')
-
-            if lastResponse != "":
-                # print(lastResponse)
-                data.append(lastResponse)
-
-        if lastResponse == errorResponse:
-            break
-
-        # print(data)
-
-        if command == 'AT+CGNSINF':
-            data = data[1].split(':')
-            data = data[1].strip(' ').split(',')
-            data = dict(zip(dataFormat, data))
+        while ser.inWaiting() > 0:
+            data += ser.read(ser.inWaiting())
+        if(data != ""):
             print(data)
-
-        if commandIndex < len(commands) - 1:
-            commandIndex = commandIndex + 1
-
-        lastResponse = ''
-        data = []
-
-        time.sleep(timeSleep)
+            time.sleep(0.5)
+            ser.write(W_buff[num+1])
+            num = num + 1
+            if(num == 4):
+                time.sleep(0.5)
+                ser.write(W_buff[4])
+            data = ""
+            
 except KeyboardInterrupt:
-    if ser is not None:
+    if(ser != None):
         ser.close()
