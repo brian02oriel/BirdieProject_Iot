@@ -23,7 +23,7 @@ try:
             time.sleep(0.5)
             ser.write(W_buff[num+1].encode())
             num = num + 1
-            if(num == 5):
+            if(num == 4):
                 time.sleep(0.5)
                 ser.write(W_buff[4].encode())
                 num = 0
