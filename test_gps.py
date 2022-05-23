@@ -10,7 +10,7 @@ num=0
 try:
     while True:
         while ser.inWaiting() > 0:
-            data += ser.read(ser.inWaiting().encode())
+            data += ser.read(ser.inWaiting())
         if(data != ""):
             print(data)
             time.sleep(0.5)
