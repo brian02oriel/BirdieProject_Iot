@@ -3,7 +3,7 @@ import time
 
 ser = serial.Serial("/dev/ttyUSB0", 115200)
 
-W_buff = ["AT\r\n", "AT+CMGF=1\r\n", "AT+CSCA=\"+8613800755500\"\r\n", "AT+CMGS=\"65883374\"\r\n", "HELLO WORLD"]
+W_buff = ["AT\r\n", "AT+CMGF=1\r\n", "AT+CSCA=\"+507\"\r\n", "AT+CMGS=\"65883374\"\r\n", "HELLO WORLD"]
 ser.write(W_buff[0].encode())
 ser.flushInput()
 data=""
