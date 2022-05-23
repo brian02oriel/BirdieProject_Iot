@@ -12,14 +12,14 @@ try:
         while ser.inWaiting() > 0:
             data += ser.read(ser.inWaiting()).decode()
         if(data != ""):
-            print(num)
             print(data)
-            if(num == 4):
-                time.sleep(0.5)
-                ser.write(W_buff[4].encode())
             time.sleep(0.5)
             ser.write(W_buff[num+1].encode())
             num = num + 1
+            if(num == 4):
+                time.sleep(0.5)
+                ser.write(W_buff[4].encode())
+                num = 0
             data = ""
             
 except KeyboardInterrupt:
