@@ -3,7 +3,7 @@ import time
 
 ser = serial.Serial("/dev/ttyUSB0", 115200)
 
-W_buff = ["AT\r\n", "AT+CMGF=1\r\n", "AT+CSCA=\"+8613800755500\"\r\n", "AT+CMGS=\"+507 65883374\"\r\n", "HELLO WORLD"]
+W_buff = ["AT\r\n", "AT+CMGF=1\r\n", "AT+CSCA=\"+8613800755500\"\r\n", "AT+CMGS=\"65883374\"\r\n", "HELLO WORLD"]
 ser.write(W_buff[0].encode())
 ser.flushInput()
 data=""
@@ -17,6 +17,8 @@ try:
             time.sleep(0.5)
             ser.write(W_buff[num+1].encode())
             num = num + 1
+            if(num == 3):
+                time.sleep(0.5)
             if(num == 4):
                 time.sleep(0.5)
                 ser.write(W_buff[4].encode())
