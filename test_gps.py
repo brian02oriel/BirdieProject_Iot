@@ -12,6 +12,7 @@ try:
         while ser.inWaiting() > 0:
             data += ser.read(ser.inWaiting()).decode()
         if(data != ""):
+            print(num)
             print(data)
             time.sleep(0.5)
             ser.write(W_buff[num].encode())
